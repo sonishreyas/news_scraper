@@ -2,6 +2,7 @@ news_websites = [
     {
         "_id" : 1,
         "url" : "https://timesofindia.indiatimes.com/news",
+        "source_url" : "https://timesofindia.indiatimes.com",
         "topic" : "Latest News",
         "source" : "Times of India",
         "page_xpath" : "//*[@id='itemContainer'][2]/li/a",
