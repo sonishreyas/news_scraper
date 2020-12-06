@@ -3,6 +3,7 @@ from urllib.parse import urljoin
 from NEWS_SCRAPER.sources import *
 import pandas as pd
 from NEWS_SCRAPER.items import *
+# from NEWS_SCRAPER.summarizer import summarize_english_news
 
 class NewsSpider(scrapy.Spider):
     name = 'news'
@@ -44,8 +45,9 @@ class NewsSpider(scrapy.Spider):
     def parse_news_articles(self, response):
         # item = NewsScraperItem()
         url = response.url
-        title =  response.xpath(f'{self.title_xpath}').extract()
-        description = response.xpath(f'{self.description_xpath}').extract()
+        title =  response.xpath(f'{self.title_xpath}//text()').get()
+        description = response.xpath(f'{self.description_xpath}//text()').get()
+        print(description)
         author = response.xpath(f'{self.author_xpath}').extract()
         print("we are here **********+*++++++++++++++++++++++++**************************")
         df = pd.read_csv("/home/ubuntu/BE/news-aggregator/NEWS_SCRAPER/NEWS_SCRAPER/spiders/news.csv")
@@ -59,6 +61,7 @@ class NewsSpider(scrapy.Spider):
         df = pd.concat([df,da])
         df.set_index('url',inplace=True)
         df.to_csv("/home/ubuntu/BE/news-aggregator/NEWS_SCRAPER/NEWS_SCRAPER/spiders/news.csv")
+        # summarize_english_news()
         # yield item
 
         
