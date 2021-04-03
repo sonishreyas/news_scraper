@@ -1,5 +1,6 @@
 from transformers import pipeline
 import pandas as pd
+
 def summarize_english_news():
     summarizer = pipeline("summarization")
     df = pd.read_csv('/home/ubuntu/BE/news-aggregator/NEWS_SCRAPER/NEWS_SCRAPER/spiders/news.csv')
