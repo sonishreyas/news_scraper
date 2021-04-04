@@ -5,7 +5,7 @@ from src.scraper.spiders.spider import NewsSpider
 from src.utilities.utilities import run_spider
 
 def scrape_news(source):
-    run_spider(source)
+    run_spider(source_information=source)
 
 if  __name__ == "__main__":
     parser = argparse.ArgumentParser()

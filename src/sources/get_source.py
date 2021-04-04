@@ -9,7 +9,7 @@ class NewsSource:
         self.information = self.fetch_news_source_data()
 
     def fetch_news_source_data(self):
-        for news_source_info in news_source_info_list:
+        for news_source_info in news_websites:
             if self.id:
                 if news_source_info["_id"] == self.id:
                     news_info = news_source_info
