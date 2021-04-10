@@ -1,5 +1,7 @@
 from src.sources import *
 from scrapy.crawler import CrawlerRunner
+from multiprocessing import Process
+from twisted.internet import reactor
 
 def run_spider(spider,source_information):
     def f():
