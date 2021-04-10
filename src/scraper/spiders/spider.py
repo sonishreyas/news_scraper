@@ -12,6 +12,7 @@ class NewsSpider(scrapy.Spider):
     def __init__(self, source_information):
         self.url = source_information.get("url")
         self.topic = source_information.get("topic")
+        self.source_url = source_information.get("source_url")
         self.page_xpath = source_information.get("page_xpath")
         self.news_xpath = source_information.get("news_xpath")
         self.articles_xpath = source_information.get("articles_xpath")
@@ -25,30 +26,22 @@ class NewsSpider(scrapy.Spider):
         yield scrapy.Request(url=self.url, callback=self.parse)
     
     def parse(self, response):
-        print("In parse request")
-
-        pages = response.xpath(f'{self.page_xpath}').extract()
-        print(pages)
+        pages = response.xpath(self.page_xpath).extract()
         for page in pages:
             page = urljoin(self.url,page)
             yield scrapy.Request(url=page, callback=self.parse_page)
             
     def parse_page(self,response):
-        print("In parse page request")
-
         urls = response.xpath(f'{self.news_xpath}').extract()
-        print(urls)
         for url in urls:
-            url = urljoin(self.source_url,url)
+            url = self.source_url+url
             yield scrapy.Request(url=url,callback=self.parse_news_articles)
  
     def parse_news_articles(self, response):
-        print("inside parse_news_articles")
         url = response.url
         title =  response.xpath(f'{self.title_xpath}').get()
         description = response.xpath(f'{self.description_xpath}').get()
         author = response.xpath(f'{self.author_xpath}').extract()
-        print("we are here **********+*++++++++++++++++++++++++**************************")
         data = [{
             'url' : url,
             'title' : title,
@@ -60,6 +53,6 @@ class NewsSpider(scrapy.Spider):
         
     def save(self,summarized_news):
         mydb = MongoDB()
-        object_id = mydb.insert_many(news,summarized_news)
+        object_id = mydb.insert_many("news",summarized_news)
 
         
