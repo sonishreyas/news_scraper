@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 class MongoDB():
     def __init__(self):
-        load_dotenv('/home/configs/.env.dev')
+        load_dotenv('/home/ubuntu/BE/news_scraper/src/configs/.env')
         self.client =  MongoClient(f'mongodb://{environ.get("MONGO_IP")}:{environ.get("MONGO_PORT")}/')  
         self.mydb = self.client[environ.get("MONGO_DATABASE")]
         self.mydb.authenticate(environ.get('MONGO_USER'),environ.get('MONGO_PWD'))

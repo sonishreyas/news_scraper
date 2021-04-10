@@ -6,8 +6,6 @@ from src.exceptions import source_not_found
 class NewsSource:
     def __init__(self,source_id):
         self.id = int(source_id)
-        self.information = self.fetch_news_source_data()
-
     def fetch_news_source_data(self):
         for news_source_info in news_websites:
             if self.id:

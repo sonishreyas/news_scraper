@@ -13,4 +13,5 @@ if  __name__ == "__main__":
     if not args.source_id:
         raise missing_source_id_argument("Argument --source_id is mandatory")
     source = NewsSource(args.source_id)
-    scrape_news(source)
+    source_information = source.fetch_news_source_data()
+    scrape_news(source_information)
