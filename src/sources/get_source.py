@@ -3,6 +3,7 @@ import os
 from src.sources.sources import *
 from src.exceptions import source_not_found
 
+
 class NewsSource:
     def __init__(self,source_id):
         self.id = int(source_id)

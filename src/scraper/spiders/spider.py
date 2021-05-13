@@ -20,11 +20,11 @@ class NewsSpider(scrapy.Spider):
         self.description_xpath = source_information.get("description_xpath")
         self.image_xpath = source_information.get("image_xpath")
         self.author_xpath = source_information.get("author_xpath")
-
+        self.language = source_information.get("language")
 
     def start_requests(self):
         yield scrapy.Request(url=self.url, callback=self.parse)
-    
+        
     def parse(self, response):
         pages = response.xpath(self.page_xpath).extract()
         for page in pages:
@@ -40,19 +40,34 @@ class NewsSpider(scrapy.Spider):
     def parse_news_articles(self, response):
         url = response.url
         title =  response.xpath(f'{self.title_xpath}').get()
-        description = response.xpath(f'{self.description_xpath}').get()
+        description = response.xpath(f'{self.description_xpath}').extract()
         author = response.xpath(f'{self.author_xpath}').extract()
+        if isinstance(description, list):
+            description = "".join(description)
         data = [{
             'url' : url,
             'title' : title,
             'description' : description,
-            'author' : author
+            'author' : author,
+            'topic' : self.topic,
+            'language': self.language
         }]
-        summarized_news = summarize_english_news(data)
-        self.save(summarized_news)
+        da1 = pd.DataFrame(data)
+        df = pd.read_csv("test.csv")
+        da1 = pd.concat([da,df])
+        da1.set_index('url',inplace=True)
+        da1.to_csv("test.csv")
+        if data[0]["description"] != "":
+            print("So I am finally here")
+            if self.language == "english":
+                summarized_news = summarize_english_news(data)
+        #     print(summarized_news)
+                self.save(summarized_news)
         
     def save(self,summarized_news):
+        print("saving data")
         mydb = MongoDB()
         object_id = mydb.insert_many("news",summarized_news)
+        print(object_id)
 
         

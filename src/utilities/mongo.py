@@ -8,7 +8,7 @@ class MongoDB():
         load_dotenv('/home/ubuntu/BE/news_scraper/src/configs/.env')
         self.client =  MongoClient(f'mongodb://{environ.get("MONGO_IP")}:{environ.get("MONGO_PORT")}/')  
         self.mydb = self.client[environ.get("MONGO_DATABASE")]
-        self.mydb.authenticate(environ.get('MONGO_USER'),environ.get('MONGO_PWD'))
+        # self.mydb.authenticate(environ.get('MONGO_USER'),environ.get('MONGO_PWD'))
 
     def insert(self, collection_name, data):
         collection = getattr(self.mydb, collection_name)
@@ -17,6 +17,7 @@ class MongoDB():
 
     def insert_many(self, collection_name, data):
         collection = getattr(self.mydb, collection_name)
+        print(self.mydb)
         object_id = collection.insert_many(data)
         return object_id
     
