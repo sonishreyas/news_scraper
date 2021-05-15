@@ -17,7 +17,6 @@ class MongoDB():
 
     def insert_many(self, collection_name, data):
         collection = getattr(self.mydb, collection_name)
-        print(self.mydb)
         object_id = collection.insert_many(data)
         return object_id
     

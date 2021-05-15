@@ -52,22 +52,18 @@ class NewsSpider(scrapy.Spider):
             'topic' : self.topic,
             'language': self.language
         }]
-        da1 = pd.DataFrame(data)
-        df = pd.read_csv("test.csv")
-        da1 = pd.concat([da,df])
-        da1.set_index('url',inplace=True)
-        da1.to_csv("test.csv")
+        self.summarize(data)
+
+    def summarize(self,data):
         if data[0]["description"] != "":
             print("So I am finally here")
             if self.language == "english":
                 summarized_news = summarize_english_news(data)
-        #     print(summarized_news)
                 self.save(summarized_news)
-        
+
     def save(self,summarized_news):
-        print("saving data")
         mydb = MongoDB()
         object_id = mydb.insert_many("news",summarized_news)
-        print(object_id)
+        
 
         
