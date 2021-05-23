@@ -3,7 +3,6 @@ import pandas as pd
 import logging
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
-import tensorflow as tf
 
 def summarize_english_news(data):
     summarizer = pipeline("summarization")
