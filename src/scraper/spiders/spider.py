@@ -52,14 +52,18 @@ class NewsSpider(scrapy.Spider):
             'topic' : self.topic,
             'language': self.language
         }]
+        print("in parse_news_articles ")
         self.summarize(data)
 
     def summarize(self,data):
+        print("in summarizer")
         if data[0]["description"] != "":
             if self.language == "english":
                 summarized_news = summarize_english_news(data)
                 self.save(summarized_news)
 
     def save(self,summarized_news):
+        print("Saving the records")
         mydb = MongoDB()
-        object_id = mydb.insert_many("news",summarized_news)      
+        object_id = mydb.insert_many("articles",summarized_news)   
+        print(object_id)   

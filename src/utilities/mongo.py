@@ -6,16 +6,16 @@ from dotenv import load_dotenv
 class MongoDB():
     def __init__(self):
         load_dotenv('/home/ubuntu/BE/news_scraper/src/configs/.env.prod')
-        self.client =  MongoClient(f'mongodb://{environ.get("MONGO_IP")}:{environ.get("MONGO_PORT")}/')  
+        self.client = MongoClient(f"mongodb://{environ.get('MONGO_USER')}:{environ.get('MONGO_PWD')}@{environ.get('MONGO_IP')}:{environ.get('MONGO_PORT')}/{environ.get('MONGO_DATABASE')}",authSource=environ.get("MONGO_DATABASE_AUTHENTICATION")) 
         self.mydb = self.client[environ.get("MONGO_DATABASE")]
-        self.mydb.authenticate(environ.get('MONGO_USER'),environ.get('MONGO_PWD'))
-
+        
     def insert(self, collection_name, data):
         collection = getattr(self.mydb, collection_name)
         object_id = collection.insert(data)
         return object_id
 
     def insert_many(self, collection_name, data):
+        print("insert karlo")
         collection = getattr(self.mydb, collection_name)
         object_id = collection.insert_many(data)
         return object_id
