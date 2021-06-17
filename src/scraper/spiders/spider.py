@@ -7,6 +7,7 @@ from src.utilities.summarizer import summarize_english_news
 from src.utilities.mongo import MongoDB
 from src.utilities.translate import translate
 from src.sources.languages import languages
+from datetime import datetime
 
 class NewsSpider(scrapy.Spider):
     name = 'news'
@@ -23,7 +24,7 @@ class NewsSpider(scrapy.Spider):
         self.image_xpath = source_information.get("image_xpath")
         self.author_xpath = source_information.get("author_xpath")
         self.language = source_information.get("language")
-
+        self.time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     def start_requests(self):
         yield scrapy.Request(url=self.url, callback=self.parse)
         
@@ -34,11 +35,15 @@ class NewsSpider(scrapy.Spider):
             yield scrapy.Request(url=page, callback=self.parse_page)
             
     def parse_page(self,response):
+        mydb = MongoDB()
         urls = response.xpath(f'{self.news_xpath}').extract()
         for url in urls:
             url = self.source_url+url
-            yield scrapy.Request(url=url,callback=self.parse_news_articles)
- 
+            is_present = mydb.query(collection_name="articles",search={'url':url})
+            if len(is_present) == 0:
+                yield scrapy.Request(url=url,callback=self.parse_news_articles)
+            else:
+                break
     def parse_news_articles(self, response):
         url = response.url
         title =  response.xpath(f'{self.title_xpath}').get()
@@ -54,9 +59,9 @@ class NewsSpider(scrapy.Spider):
             'topic' : self.topic,
             'language': self.language,
             'is_summarized':0,
-            'is_translated': 0
+            'is_translated': 0,
+            'time': self.time
         }]
-        print("in parse_news_articles")
         if data[0]['title']!= None and len(data[0]['description'])>100:
             self.save(data)
         
