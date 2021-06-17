@@ -7,6 +7,7 @@ from src.utilities.summarizer import summarize_english_news
 from src.utilities.mongo import MongoDB
 from src.utilities.translate import translate
 from src.sources.languages import languages
+from datetime import datetime
 
 class NewsSpider(scrapy.Spider):
     name = 'news'
@@ -23,7 +24,7 @@ class NewsSpider(scrapy.Spider):
         self.image_xpath = source_information.get("image_xpath")
         self.author_xpath = source_information.get("author_xpath")
         self.language = source_information.get("language")
-
+        self.time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     def start_requests(self):
         yield scrapy.Request(url=self.url, callback=self.parse)
         
@@ -58,7 +59,8 @@ class NewsSpider(scrapy.Spider):
             'topic' : self.topic,
             'language': self.language,
             'is_summarized':0,
-            'is_translated': 0
+            'is_translated': 0,
+            'time': self.time
         }]
         if data[0]['title']!= None and len(data[0]['description'])>100:
             self.save(data)

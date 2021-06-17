@@ -15,8 +15,10 @@ WORKDIR /app
 ADD . /app
 
 # Switching to a non-root user, please refer to https://aka.ms/vscode-docker-python-user-rights
-RUN useradd appuser && chown -R appuser /app
-USER appuser
+# RUN useradd appuser && chown -R appuser /app
+# USER appuser
+# RUN chown appuser:appuser -R /app/
+
 RUN export PYTHONPATH="/app"
 # RUN export GOOGLE_APPLICATION_CREDENTIALS="/app/src/configs/key.json"
 # ENV GOOGLE_APPLICATION_CREDENTIALS="/app/src/configs/key.json"
