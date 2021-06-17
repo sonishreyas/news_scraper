@@ -5,6 +5,8 @@ import pandas as pd
 from src.scraper.items import *
 from src.utilities.summarizer import summarize_english_news
 from src.utilities.mongo import MongoDB
+from src.utilities.translate import translate
+from src.sources.languages import languages
 
 class NewsSpider(scrapy.Spider):
     name = 'news'
@@ -50,16 +52,39 @@ class NewsSpider(scrapy.Spider):
             'description' : description,
             'author' : author,
             'topic' : self.topic,
-            'language': self.language
+            'language': self.language,
+            'is_summarized':0,
+            'is_translated': 0
         }]
-        self.summarize(data)
+        print("in parse_news_articles")
+        if data[0]['title']!= None and len(data[0]['description'])>100:
+            self.save(data)
+        
+        # self.summarize(data)
 
-    def summarize(self,data):
-        if data[0]["description"] != "":
-            if self.language == "english":
-                summarized_news = summarize_english_news(data)
-                self.save(summarized_news)
+    # def summarize(self,data):
+    #     print("in summarizer")
+    #     mydb = MongoDB()
+    #     if data[0]["description"] != "":
+    #         if self.language == "english":
+    #             summarized_news = summarize_english_news(data)
+    #             self.languages(summarized_news)
 
+    # def languages(self,summarized_news):
+    #     print("In translators")
+    #     result = []
+    #     for article in summarized_news:
+    #         a = article
+    #         for lang in languages:
+    #             title = translate(lang['ISO-639-1 Code'],article['title'])
+    #             summary = translate(lang['ISO-639-1 Code'],article['summary'])
+    #             a[f'{lang["Language"]}_summary'] = summary
+    #             a[f'{lang["Language"]}_title'] = title
+    #         result.append(a)
+    #     self.save(result)
+                   
     def save(self,summarized_news):
+        print("Saving the records")
         mydb = MongoDB()
-        object_id = mydb.insert_many("news",summarized_news)      
+        object_id = mydb.insert_many("articles",summarized_news)   
+        print(object_id)   

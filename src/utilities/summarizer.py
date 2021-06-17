@@ -19,3 +19,15 @@ def summarize_english_news(data):
             pass
     # print(result)
     return result
+
+def summarize_news(data):
+    summarizer = pipeline("summarization")
+    try:
+        inshort = summarizer(data['description'], max_length=len(data['description']), min_length=60, do_sample=False)
+        data['summary'] = inshort[0]['summary_text']
+        data['is_summarized'] = 1
+    except:
+        print("Exception in Summarization!!!!")
+        data['summary'] = ""
+        pass
+    return data
