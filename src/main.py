@@ -9,7 +9,6 @@ from src.utilities.translate import translate
 from src.sources.languages import languages
 
 def scrape_news(source):
-    print("reached here")
     run_spider(NewsSpider,source_information=source)
 
 def summarize():
@@ -56,13 +55,12 @@ if  __name__ == "__main__":
     if not args.source_id:
         raise missing_source_id_argument("Argument --source_id is mandatory")
     source = NewsSource(args.source_id)
-    source_information = source.fetch_news_source_data()
+    source_information = source.fetch_news_source_data_db()
     if not args.script_id:
         script_ids = [1,2,3]
     elif "," not in args.script_id:
         script_ids = [args.script_id]
     else:
         script_ids = args.script_id.split(",")
-    print(script_ids)
     for i in script_ids:
         run_scripts(source_information,int(i))
