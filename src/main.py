@@ -19,7 +19,7 @@ def summarize():
         for data in results:
             if data['language'] == "english":
                 summarized_news = summarize_news(data)
-                mydb.find_and_update(collection_name="articles",search={'_id': data['_id']},new_fields={'is_summarized':data['is_summarized'],'summary': data['summary']})
+                mydb.find_and_update(collection_name="articles",search={'_id': data['_id']},new_fields={'is_summarized':data['is_summarized'],'summary': data['summary'],'original_summary': data['original_summary']})
         mydb.close_connection()
 
 def translate_summary():
