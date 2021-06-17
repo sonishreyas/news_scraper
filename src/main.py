@@ -11,21 +11,21 @@ from src.sources.languages import languages
 def scrape_news(source):
     run_spider(NewsSpider,source_information=source)
 
-def summarize():
+def summarize(id):
         print("in summarizer")
         mydb = MongoDB()
-        results = mydb.query(collection_name="articles",search={'is_summarized':0})
+        results = mydb.query(collection_name="articles",search={'is_summarized':0,'source_id':id})
         summarized_news = {}
         for data in results:
             if data['language'] == "english":
                 summarized_news = summarize_news(data)
-                mydb.find_and_update(collection_name="articles",search={'_id': data['_id']},new_fields={'is_summarized':data['is_summarized'],'summary': data['summary']})
+                mydb.find_and_update(collection_name="articles",search={'_id': data['_id']},new_fields={'is_summarized':summarized_news['is_summarized'],'summary': summarized_news['summary'],'original_summary': summarized_news['original_summary']})
         mydb.close_connection()
 
-def translate_summary():
+def translate_summary(id):
     print("In translators")
     mydb = MongoDB()
-    results = mydb.query(collection_name="articles",search={'is_translated':0})
+    results = mydb.query(collection_name="articles",search={'is_translated':0,'source_id':id})
     for article in results:
         a = {'is_translated':1}
         for lang in languages:
@@ -42,10 +42,10 @@ def run_scripts(source, script_id):
         scrape_news(source)
     elif script_id == 2:
         print("Running 2nd script")
-        summarize()
+        summarize(source['_id'])
     elif script_id == 3:
         print("Running 3rd script")
-        translate_summary()
+        translate_summary(source['_id'])
     
 if  __name__ == "__main__":
     parser = argparse.ArgumentParser()

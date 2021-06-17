@@ -13,6 +13,7 @@ class NewsSpider(scrapy.Spider):
     name = 'news'
 
     def __init__(self, source_information):
+        self.source_id = source_information.get("_id")
         self.url = source_information.get("url")
         self.topic = source_information.get("topic")
         self.source_url = source_information.get("source_url")
@@ -52,6 +53,7 @@ class NewsSpider(scrapy.Spider):
         if isinstance(description, list):
             description = "".join(description)
         data = [{
+            'source_id': self.source_id,
             'url' : url,
             'title' : title,
             'description' : description,
