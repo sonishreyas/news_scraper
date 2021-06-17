@@ -29,10 +29,17 @@ class MongoDB():
 
     def find_entries(self, collection_name, search={}, keys_to_extract=['_id']):
         collection = getattr(self.mydb, collection_name)
-        cq = []
+        result = []
         for post in collection.find(search):
-            cq.append({key: post[key] for key in keys_to_extract})
-        return cq
+            result.append({key: post[key] for key in keys_to_extract})
+        return result
+
+    def query(self, collection_name, search={}):
+        collection = getattr(self.mydb, collection_name)
+        result = []
+        for post in collection.find(search):
+            result.append(post)
+        return result
 
     def close_connection(self):
         self.client.close()
