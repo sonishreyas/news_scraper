@@ -5,7 +5,7 @@ from twisted.internet import reactor
 
 def run_spider(spider,source_information):
     def f():
-            runner = CrawlerRunner()
+            runner   = CrawlerRunner()
             deferred = runner.crawl(spider,source_information = source_information)
             deferred.addBoth(lambda _: reactor.stop())
             reactor.run()

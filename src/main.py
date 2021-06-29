@@ -1,4 +1,5 @@
 import argparse
+import os
 from src.sources.get_source import NewsSource
 from src.exceptions import *
 from src.scraper.spiders.spider import NewsSpider
@@ -8,7 +9,12 @@ from src.utilities.mongo import MongoDB
 from src.utilities.translate import translate
 from src.sources.languages import languages
 
+def scrape_for_one(source):
+    source['source_is_article_url'] = True
+    run_spider(NewsSpider,source_information=source)
+
 def scrape_news(source):
+    source['source_is_article_url'] = False
     run_spider(NewsSpider,source_information=source)
 
 def summarize(id):
@@ -17,6 +23,7 @@ def summarize(id):
         results = mydb.query(collection_name="articles",search={'is_summarized':0,'source_id':id})
         summarized_news = {}
         for data in results:
+            print(data)
             if data['language'] == "english":
                 summarized_news = summarize_news(data)
                 mydb.find_and_update(collection_name="articles",search={'_id': data['_id']},new_fields={'is_summarized':summarized_news['is_summarized'],'summary': summarized_news['summary'],'original_summary': summarized_news['original_summary']})
@@ -46,21 +53,34 @@ def run_scripts(source, script_id):
     elif script_id == 3:
         print("Running 3rd script")
         translate_summary(source['_id'])
-    
+
 if  __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-id","--source_id",required=True, help="Provide the Source Id")
-    parser.add_argument("-script_id","--script_id",required=True, help="Provide the Script Id to run")
+
+    parser.add_argument("-id",          "--source_id",   required=True,  help="Provide the Source Id")
+    parser.add_argument("-script_id",   "--script_id",   required=True,  help="Provide the Script Id to run")
+    parser.add_argument("-article_url", "--article_url", required=False, help="article_url optional")
+
     args = parser.parse_args()
+
     if not args.source_id:
         raise missing_source_id_argument("Argument --source_id is mandatory")
+
     source = NewsSource(args.source_id)
     source_information = source.fetch_news_source_data_db()
+
+    if args.article_url :
+        print("scraping single article", args.article_url)
+        source_information['article_url'] = args.article_url
+        scrape_for_one(source_information)
+        os._exit(0);
+
     if not args.script_id:
         script_ids = [1,2,3]
     elif "," not in args.script_id:
         script_ids = [args.script_id]
     else:
         script_ids = args.script_id.split(",")
+
     for i in script_ids:
         run_scripts(source_information,int(i))

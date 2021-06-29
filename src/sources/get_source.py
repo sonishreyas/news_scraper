@@ -7,6 +7,7 @@ from src.utilities.mongo import MongoDB
 class NewsSource:
     def __init__(self,source_id):
         self.id = int(source_id)
+
     # def fetch_news_source_data(self):
     #     for news_source_info in news_websites:
     #         if self.id:
@@ -16,7 +17,8 @@ class NewsSource:
     #         else:
     #             if self.id:
     #                 raise source_not_found("Source with id %d not found".format(self.id))
-    #     return news_info 
+    #     return news_info
+
     def fetch_news_source_data_db(self):
         mydb = MongoDB()
         news_info = mydb.query(collection_name="sources",search={'_id':self.id})
