@@ -14,7 +14,7 @@ news_websites = [
         "articles_xpath" : "//*[@id='content']/div/div[2]",
         "title_xpath" : "//*[@class='_1Y-96']//text()",
         "description_xpath" : "//*[@class='_3YYSt clearfix  ']/text()",
-        "image_xpath" : "//*[@id='app']/div/div[4]/div[1]/div[2]/div[2]/section/div/div/img",
+        "image_xpath" : "//*[@decoding='async']",
         "author_xpath" : "//*[@id='app']/div/div[4]/div[1]/div[2]/div[1]/div/div[1]"
     }
 ]

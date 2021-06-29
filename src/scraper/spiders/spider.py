@@ -50,6 +50,7 @@ class NewsSpider(scrapy.Spider):
         title =  response.xpath(f'{self.title_xpath}').get()
         description = response.xpath(f'{self.description_xpath}').extract()
         author = response.xpath(f'{self.author_xpath}').extract()
+        image = response.xpath(f'{self.image_xpath}/@src').extract()[0]
         if isinstance(description, list):
             description = "".join(description)
         data = [{
@@ -58,6 +59,7 @@ class NewsSpider(scrapy.Spider):
             'title' : title,
             'description' : description,
             'author' : author,
+            'image' : image,
             'topic' : self.topic,
             'language': self.language,
             'is_summarized':0,
