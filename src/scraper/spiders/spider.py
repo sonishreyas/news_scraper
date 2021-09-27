@@ -29,16 +29,21 @@ class NewsSpider(scrapy.Spider):
         yield scrapy.Request(url=self.url, callback=self.parse)
 
     def parse(self, response):
+        print("hererer")
         pages = response.xpath(self.page_xpath).extract()
+        print(pages)
         for page in pages:
             page = urljoin(self.url,page)
             yield scrapy.Request(page, callback=self.parse_page)
 
             
     def parse_page(self,response):
+        print("afghj")
         mydb = MongoDB()
         urls = response.xpath(f'{self.news_xpath}').extract()
+        print(urls)
         for url in urls:
+            print(url)
             url = self.source_url+url
             is_present = mydb.query(collection_name="articles",search={'url':url})
             if len(is_present) == 0:
@@ -46,6 +51,7 @@ class NewsSpider(scrapy.Spider):
             else:
                 break
     def parse_news_articles(self, response):
+        print("parse_news_articles")
         url = response.url
         description = response.xpath(f'{self.description_xpath}').extract()
         for t_xpath in self.title_xpath:

@@ -9,6 +9,7 @@ from src.utilities.translate import translate
 from src.sources.languages import languages
 
 def scrape_news(source):
+    print("asdas")
     run_spider(NewsSpider,source_information=source)
 
 def summarize(id):
