@@ -8,7 +8,7 @@ from src.utilities.mongo import MongoDB
 from src.utilities.translate import translate
 from src.sources.languages import languages
 from datetime import datetime
-
+from scrapy.http import Request
 class NewsSpider(scrapy.Spider):
     name = 'news'
 
@@ -19,21 +19,21 @@ class NewsSpider(scrapy.Spider):
         self.source_url = source_information.get("source_url")
         self.page_xpath = source_information.get("page_xpath")
         self.news_xpath = source_information.get("news_xpath")
-        self.articles_xpath = source_information.get("articles_xpath")
         self.title_xpath = source_information.get("title_xpath")
         self.description_xpath = source_information.get("description_xpath")
-        self.image_xpath = source_information.get("image_xpath")
-        self.author_xpath = source_information.get("author_xpath")
+        self.image_xpath = source_information.get("image_xpath",[])
         self.language = source_information.get("language")
         self.time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        self.p = ""
     def start_requests(self):
         yield scrapy.Request(url=self.url, callback=self.parse)
-        
+
     def parse(self, response):
         pages = response.xpath(self.page_xpath).extract()
         for page in pages:
             page = urljoin(self.url,page)
-            yield scrapy.Request(url=page, callback=self.parse_page)
+            yield scrapy.Request(page, callback=self.parse_page)
+
             
     def parse_page(self,response):
         mydb = MongoDB()
@@ -42,15 +42,28 @@ class NewsSpider(scrapy.Spider):
             url = self.source_url+url
             is_present = mydb.query(collection_name="articles",search={'url':url})
             if len(is_present) == 0:
-                yield scrapy.Request(url=url,callback=self.parse_news_articles)
+                yield scrapy.Request(url,callback=self.parse_news_articles)
             else:
                 break
     def parse_news_articles(self, response):
         url = response.url
-        title =  response.xpath(f'{self.title_xpath}').get()
         description = response.xpath(f'{self.description_xpath}').extract()
-        author = response.xpath(f'{self.author_xpath}').extract()
-        image = response.xpath(f'{self.image_xpath}/@src').extract()[0]
+        for t_xpath in self.title_xpath:
+            try:
+                title = response.xpath(f'{t_xpath}').get()
+            except:
+                pass
+            if title != None:
+                break
+
+        for img_xpath in self.image_xpath:
+            try:
+                image = response.xpath(f'{img_xpath}/@src').extract()
+            except:
+                pass
+            if len(image) > 0:
+                image = image[0]
+                break
         if isinstance(description, list):
             description = "".join(description)
         data = [{
@@ -58,7 +71,6 @@ class NewsSpider(scrapy.Spider):
             'url' : url,
             'title' : title,
             'description' : description,
-            'author' : author,
             'image' : image,
             'topic' : self.topic,
             'language': self.language,
@@ -66,31 +78,8 @@ class NewsSpider(scrapy.Spider):
             'is_translated': 0,
             'time': self.time
         }]
-        if data[0]['title']!= None and len(data[0]['description'])>100:
+        if data[0]['title']!= None and len(data[0]['description'])>100 and data[0]['image']!= []:
             self.save(data)
-        
-        # self.summarize(data)
-
-    # def summarize(self,data):
-    #     print("in summarizer")
-    #     mydb = MongoDB()
-    #     if data[0]["description"] != "":
-    #         if self.language == "english":
-    #             summarized_news = summarize_english_news(data)
-    #             self.languages(summarized_news)
-
-    # def languages(self,summarized_news):
-    #     print("In translators")
-    #     result = []
-    #     for article in summarized_news:
-    #         a = article
-    #         for lang in languages:
-    #             title = translate(lang['ISO-639-1 Code'],article['title'])
-    #             summary = translate(lang['ISO-639-1 Code'],article['summary'])
-    #             a[f'{lang["Language"]}_summary'] = summary
-    #             a[f'{lang["Language"]}_title'] = title
-    #         result.append(a)
-    #     self.save(result)
                    
     def save(self,summarized_news):
         print("Saving the records")

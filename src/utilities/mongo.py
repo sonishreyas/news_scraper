@@ -2,11 +2,13 @@ from pymongo import MongoClient
 import datetime
 from os import environ
 from dotenv import load_dotenv
-
+from src.sources.sources import news_websites
 class MongoDB():
     def __init__(self):
-        load_dotenv('/app/src/configs/.env.prod')
-        self.client = MongoClient(f"mongodb://{environ.get('MONGO_USER')}:{environ.get('MONGO_PWD')}@{environ.get('MONGO_IP')}:{environ.get('MONGO_PORT')}/{environ.get('MONGO_DATABASE')}",authSource=environ.get("MONGO_DATABASE_AUTHENTICATION")) 
+        load_dotenv('/app/src/configs/.env')
+        # self.client = MongoClient(f"mongodb://{environ.get('MONGO_USER')}:{environ.get('MONGO_PWD')}@{environ.get('MONGO_IP')}:{environ.get('MONGO_PORT')}/{environ.get('MONGO_DATABASE')}",authSource=environ.get("MONGO_DATABASE_AUTHENTICATION")) 
+        # self.mydb = self.client[environ.get("MONGO_DATABASE")]
+        self.client =  MongoClient(f'mongodb://{environ.get("MONGO_IP")}:{environ.get("MONGO_PORT")}/')  
         self.mydb = self.client[environ.get("MONGO_DATABASE")]
         
     def insert(self, collection_name, data):
@@ -15,7 +17,6 @@ class MongoDB():
         return object_id
 
     def insert_many(self, collection_name, data):
-        print("insert karlo")
         collection = getattr(self.mydb, collection_name)
         object_id = collection.insert_many(data)
         return object_id
@@ -44,4 +45,7 @@ class MongoDB():
     def close_connection(self):
         self.client.close()
 
+#
+# mongo = MongoDB()
+# mongo.insert_many("sources",news_websites)
 

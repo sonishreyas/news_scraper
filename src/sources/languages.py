@@ -1,9 +1,5 @@
 languages = [
  {
-   "Language": "Bengali",
-   "ISO-639-1 Code": "bn"
- },
- {
    "Language": "Gujarati",
    "ISO-639-1 Code": "gu"
  },

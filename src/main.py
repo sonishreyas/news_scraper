@@ -25,7 +25,7 @@ def summarize(id):
 def translate_summary(id):
     print("In translators")
     mydb = MongoDB()
-    results = mydb.query(collection_name="articles",search={'is_translated':0,'source_id':id})
+    results = mydb.query(collection_name="articles",search={'is_translated':0,'source_id':id,'is_summarized':1})
     for article in results:
         a = {'is_translated':1}
         for lang in languages:
