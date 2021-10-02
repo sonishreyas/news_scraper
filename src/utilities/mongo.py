@@ -5,11 +5,13 @@ from dotenv import load_dotenv
 from src.sources.sources import news_websites
 class MongoDB():
     def __init__(self):
-        load_dotenv('/app/src/configs/.env')
+        load_dotenv('../src/configs/.env')
+        print("Atleast in mongo init")
         # self.client = MongoClient(f"mongodb://{environ.get('MONGO_USER')}:{environ.get('MONGO_PWD')}@{environ.get('MONGO_IP')}:{environ.get('MONGO_PORT')}/{environ.get('MONGO_DATABASE')}",authSource=environ.get("MONGO_DATABASE_AUTHENTICATION")) 
         # self.mydb = self.client[environ.get("MONGO_DATABASE")]
         self.client =  MongoClient(f'mongodb://{environ.get("MONGO_IP")}:{environ.get("MONGO_PORT")}/')  
         self.mydb = self.client[environ.get("MONGO_DATABASE")]
+        print("auth done")
         
     def insert(self, collection_name, data):
         collection = getattr(self.mydb, collection_name)
